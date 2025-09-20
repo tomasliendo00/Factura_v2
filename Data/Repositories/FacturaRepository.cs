@@ -3,46 +3,46 @@ using System.Data;
 
 namespace EFWebAPI.Data.Repositories
 {
-    public class FacturaRepository : IRepository
+    public class FacturaRepository : IFacturaRepository
     {
-        public bool Actualizar(Factura oFactura)
+        private FacturaDBContext _context;
+
+        public FacturaRepository(FacturaDBContext context)      // Inyección de dependencia del contexto
         {
-            throw new NotImplementedException();
+            _context = context;
         }
 
-        public bool Borrar(int nro)
+        public bool Create(Factura factura)
         {
-            throw new NotImplementedException();
+            _context.Facturas.Add(factura);
+            return _context.SaveChanges() > 0;  // Devuelve true si se guardó al menos un cambio
         }
 
-        public bool Crear(Factura oFactura)
+        public bool Delete(int id)
         {
-            throw new NotImplementedException();
+            var fact = GetByID(id);     // Busca la factura por ID
+            if (fact != null)           // Si se encontró la factura...
+            {
+                _context.Facturas.Remove(fact);     // ...la elimina
+                return _context.SaveChanges() > 0;  // Devuelve true
+            }
+            return false;   // Devuelve falso si no se encontró la factura
         }
 
-        public List<Factura> ObtenerFacturaPorFiltros(DateOnly desde, DateOnly hasta, int idCliente)
+        public List<Factura> GetAll()
         {
-            throw new NotImplementedException();
+            return _context.Facturas.ToList(); // Retorna todas las facturas como una lista
         }
 
-        public Factura ObtenerFacturaPorNro(int nro)
+        public Factura? GetByID(int id)     // Busca una factura por su ID, puede no existir
         {
-            throw new NotImplementedException();
+            return _context.Facturas.Find(id);      // Retorna la factura o null si no se encuentra
         }
 
-        public List<Factura> ObtenerFacturas()
+        public bool Update(Factura factura)
         {
-            throw new NotImplementedException();
-        }
-
-        public int ObtenerProximoNro()
-        {
-            throw new NotImplementedException();
-        }
-
-        public DataTable ObtenerReporte(DateOnly desde, DateOnly hasta)
-        {
-            throw new NotImplementedException();
+            _context.Facturas.Update(factura);
+            return _context.SaveChanges() > 0;  // Devuelve true si se guardó al menos un cambio
         }
     }
 }
